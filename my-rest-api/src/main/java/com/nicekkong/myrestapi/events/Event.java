@@ -19,8 +19,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-
-@
+@ToString
 public class Event {
 
     private Integer id;
