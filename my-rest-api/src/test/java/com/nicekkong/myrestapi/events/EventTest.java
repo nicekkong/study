@@ -22,8 +22,6 @@ public class EventTest {
                 .name("nicekkong")
                 .description("Nicekkong's world")
                 .build();
-        assertThat(event.getName()).isEqualTo("nicekkong");
-
     }
 
     @Test
