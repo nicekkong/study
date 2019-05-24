@@ -35,6 +35,25 @@ public class EventTest {
 
         assertThat(event.getName()).isEqualTo(name);
 
+    }
 
+    @Test
+    public void domainTest() {
+
+        Domain domain = Domain.builder()
+                .name("nicekkong")
+                .build();
+
+        Domain domain1 = Domain.builder()
+                .name("adfadfadfad").build();
+
+
+        Domain2 domain2 = new Domain2();
+        domain2.setName("Adfadfa");
+
+
+        Domain2 d2 = Domain2.builder()
+                .name("asdfadsf")
+                .build();
     }
 }

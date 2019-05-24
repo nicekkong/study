@@ -1,31 +1,31 @@
+/*
+ * Copyright (c) 2019.
+ * nicekkong JE Foundation
+ */
+
 /******************************************************
  * Project Name : my-rest-api
  * File Name    : .java
  * Author       : nicekkong@gmail.com
- * Create Date  : 2019-05-22 00:13
+ * Create Date  : 2019-05-23 23:49
  * Description  : 
  ******************************************************/
 
 package com.nicekkong.myrestapi.events;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id")
-@ToString
-@Entity
-public class Event {
+@AllArgsConstructor
+@Data
+public class EventDto {
 
-    @Id @GeneratedValue
-    private Integer id;
     private String name;
     private String description;
     private LocalDateTime beginEnrollmentDateTime;
@@ -38,8 +38,5 @@ public class Event {
     private int limitOfEnrollment;
     private boolean offline;
     private boolean free;
-
-    @Enumerated(EnumType.STRING)
-    private EventStatus eventStatus = EventStatus.DRAFT;
 
 }
