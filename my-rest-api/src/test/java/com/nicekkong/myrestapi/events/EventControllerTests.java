@@ -125,4 +125,32 @@ public class EventControllerTests {
         ).andExpect(status().isBadRequest());
 
     }
+
+
+
+    @Test
+    public void createEvent_Bad_Request_Wrong_INput() throws Exception {
+
+        Event event = Event.builder()
+                .id(100)
+                .name("spring")
+                .description("nicekkong's world")
+                .beginEnrollmentDateTime(LocalDateTime.of(2018, 11, 11, 11, 11))
+                .closeEnrollmentDateTime(LocalDateTime.of(2018, 12, 31, 11, 11))
+                .beginEventDateTime(LocalDateTime.of(2018, 11, 30, 10,11))
+                .endEventDateTime(LocalDateTime.of(2018, 12, 7, 00, 00))
+                .basePrice(1000000)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("반포역 4번 출구")
+                .free(true)
+                .build();
+
+        mockMvc.perform(post("/api/events/")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(event)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
 }
