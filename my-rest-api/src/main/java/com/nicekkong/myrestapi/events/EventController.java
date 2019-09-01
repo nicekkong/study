@@ -35,30 +35,25 @@ public class EventController {
     private final ModelMapper modelMapper;
     private final EventValidator eventValidator;
 
+//    @Autowired  // 스프링 4.3 부터 Autowired 생략 가능
     public EventController(EventRepository eventRepository, ModelMapper modelMapper, EventValidator eventValidator) {
         this.eventRepository = eventRepository;
         this.modelMapper = modelMapper;
         this.eventValidator = eventValidator;
-
     }
 
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
-        if (errors.hasErrors()){
-            return ResponseEntity.badRequest().build();
-        }
 
         eventValidator.validate(eventDto, errors);
         if (errors.hasErrors()){
             return ResponseEntity.badRequest().build();
         }
-
         Event event = modelMapper.map(eventDto, Event.class);
 
-        Event newEvent = this.eventRepository.save(event);
+        Event newEvent = eventRepository.save(event);
 
         URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
-//        return ResponseEntity.created(createdUri).body(event);
         return ResponseEntity.created(createdUri).body(event);
     }
 }

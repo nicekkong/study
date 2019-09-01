@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id") // 동일성 비교시 연관관계로 인한 상호참조로 Stack-overflow를 방지하기 위해 동일성 비교를 위해 해당 필드에 대한 동일함을 체크한다.
 @ToString
 @Entity
 public class Event {
@@ -39,7 +39,7 @@ public class Event {
     private boolean offline;
     private boolean free;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)    // 기본값이 Ordinary를 String 타입으로 변경해서 JPA를 통해 DB에 저장한다.
     private EventStatus eventStatus = EventStatus.DRAFT;
 
 }

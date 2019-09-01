@@ -35,19 +35,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-//@WebMvcTest
+//@WebMvcTest       // Web과 관련된 Bean만 만들어서 테스트를 할 수 있게 한다.(MockMVC)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class EventControllerTests {
 
     @Autowired
-    MockMvc mockMvc;
+    MockMvc mockMvc;    // 웹 서버를 띄우지 않기 때문에 빠르게 구동이 가능하다. / DispatcherServlet 까지 만든다.
 
     @Autowired
     ObjectMapper objectMapper;
 
-//    @MockBean
-//    EventRepository eventRepository;
+//    @MockBean // @WebMvcTest를 사용할 경우
+//    EventRepository eventRepository;  // Mock 객체는 리턴되는 값이 모두 null 이다.
 
     @Test
     @TestDescription("최초 테스트")
@@ -59,7 +59,8 @@ public class EventControllerTests {
                 .beginEnrollmentDateTime(LocalDateTime.of(2018, 11, 11, 11, 11))
                 .closeEnrollmentDateTime(LocalDateTime.of(2018, 12, 31, 11, 11))
                 .beginEventDateTime(LocalDateTime.of(2018, 11, 25, 10,11))
-                .endEventDateTime(LocalDateTime.of(2018, 12, 25, 00, 00))
+//                .endEventDateTime(LocalDateTime.of(2018, 12, 25, 00, 00))
+                .endEventDateTime(LocalDateTime.of(2019, 12, 20, 10, 30))
                 .basePrice(100)
                 .maxPrice(200)
                 .limitOfEnrollment(100)
@@ -72,18 +73,16 @@ public class EventControllerTests {
 
         mockMvc.perform(post("/api/events/")
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .accept(MediaTypes.HAL_JSON)
+                    .accept(MediaTypes.HAL_JSON)    // 원하는 Response
                     .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
-                .andExpect(status().isCreated())
+                .andExpect(status().isCreated())    // 201 응답
                 .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("free").value(Matchers.not(false)))
-                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
-        ;
+                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()));
     }
-
 
     @Test
     public void createEvent_Bad_Request() throws Exception {
@@ -120,20 +119,21 @@ public class EventControllerTests {
     @TestDescription("입력값이 없을 경우 에러가 발생하는 테스트")
     public void createEvent_Bad_request_Empty_Input() throws Exception {
 
+
+        // Controller 의 @Valid annotation 을 통한 검증을 한다.
         EventDto eventDto = EventDto.builder().build();
 
         this.mockMvc.perform(post("/api/events")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(this.objectMapper.writeValueAsString(eventDto))
-        ).andExpect(status().isBadRequest());
+                .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
 
     }
 
-
-
     @Test
     @TestDescription("입력받을 수 없는 값을 사용했을 경우 에러가 발생하는 테스트")
-    public void createEvent_Bad_Request_Wrong_INput() throws Exception {
+    public void createEvent_Bad_Request_Wrong_Input() throws Exception {
 
         Event event = Event.builder()
                 .id(100)
@@ -156,5 +156,10 @@ public class EventControllerTests {
                 .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+//                .andExpect(jsonPath("$[0].objectName").exists())
+//                .andExpect(jsonPath("$[0].field").exists())
+//                .andExpect(jsonPath("$[0].defaultMessage").exists())
+//                .andExpect(jsonPath("$[0].code").exists())
+//                .andExpect(jsonPath("$[0].rejectedValue").exists());
     }
 }

@@ -10,7 +10,7 @@ package com.nicekkong.myrestapi.events;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class EventTest {
@@ -22,6 +22,8 @@ public class EventTest {
                 .name("nicekkong")
                 .description("Nicekkong's world")
                 .build();
+
+        assertThat(event).isNotNull();
     }
 
     @Test
@@ -29,11 +31,19 @@ public class EventTest {
 
         Event event = new Event();
 
-        String name = "Nicekkong";
-        event.setName(name);
-        event.setDescription("Nicekkong's World");
 
+        // Given
+        String name = "Nicekkong";
+        String description = "Nicekkong's World";
+
+        // When
+        event.setName(name);
+        event.setDescription(description);
+
+
+        // Then
         assertThat(event.getName()).isEqualTo(name);
+        assertThat(event.getDescription()).isEqualTo(description);
 
     }
 
