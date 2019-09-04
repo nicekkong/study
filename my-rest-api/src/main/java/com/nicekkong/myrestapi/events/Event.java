@@ -1,11 +1,3 @@
-/******************************************************
- * Project Name : my-rest-api
- * File Name    : .java
- * Author       : nicekkong@gmail.com
- * Create Date  : 2019-05-22 00:13
- * Description  : 
- ******************************************************/
-
 package com.nicekkong.myrestapi.events;
 
 import lombok.*;
@@ -42,4 +34,8 @@ public class Event {
     @Enumerated(EnumType.STRING)    // 기본값이 Ordinary를 String 타입으로 변경해서 JPA를 통해 DB에 저장한다.
     private EventStatus eventStatus = EventStatus.DRAFT;
 
+    public void update() {
+        this.free = this.basePrice == 0 && this.maxPrice == 0;
+        this.offline = this.location != null && !this.location.isBlank();
+    }
 }

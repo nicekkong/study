@@ -119,7 +119,6 @@ public class EventControllerTests {
     @TestDescription("입력값이 없을 경우 에러가 발생하는 테스트")
     public void createEvent_Bad_request_Empty_Input() throws Exception {
 
-
         // Controller 의 @Valid annotation 을 통한 검증을 한다.
         EventDto eventDto = EventDto.builder().build();
 
@@ -132,18 +131,18 @@ public class EventControllerTests {
     }
 
     @Test
-    @TestDescription("입력받을 수 없는 값을 사용했을 경우 에러가 발생하는 테스트")
+    @TestDescription("입력값을 잘못 사용했을 경우 에러가 발생하는 테스트")
     public void createEvent_Bad_Request_Wrong_Input() throws Exception {
 
-        Event event = Event.builder()
-                .id(100)
+        EventDto event = EventDto.builder()
                 .name("spring")
                 .description("nicekkong's world")
-                .beginEnrollmentDateTime(LocalDateTime.of(2018, 11, 11, 11, 11))
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 11, 11, 11, 11))
                 .closeEnrollmentDateTime(LocalDateTime.of(2018, 12, 31, 11, 11))
-                .beginEventDateTime(LocalDateTime.of(2018, 11, 30, 10,11))
-                .endEventDateTime(LocalDateTime.of(2018, 12, 7, 00, 00))
-                .basePrice(1000000)
+                .beginEventDateTime(LocalDateTime.of(2018, 11, 25, 10,11))
+//                .endEventDateTime(LocalDateTime.of(2018, 12, 25, 00, 00))
+                .endEventDateTime(LocalDateTime.of(2019, 12, 20, 10, 30))
+                .basePrice(100)
                 .maxPrice(200)
                 .limitOfEnrollment(100)
                 .location("반포역 4번 출구")
@@ -152,14 +151,52 @@ public class EventControllerTests {
 
         mockMvc.perform(post("/api/events/")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .accept(MediaTypes.HAL_JSON)
+                .accept(MediaTypes.HAL_JSON)    // 원하는 Response
+                .content(objectMapper.writeValueAsString(event)))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0].objectName").exists())
+            .andExpect(jsonPath("$[0].field").exists())
+            .andExpect(jsonPath("$[0].defaultMessage").exists())
+            .andExpect(jsonPath("$[0].code").exists())
+            .andExpect(jsonPath("$[0].rejectedValue").exists())
+            ;
+    }
+
+
+    @Test
+    @TestDescription("비즈니스 로직 적용 여부 확인")
+    public void procBusinessEvent() throws Exception {
+
+        EventDto event = EventDto.builder()
+                .name("spring")
+                .description("nicekkong's world")
+                .beginEnrollmentDateTime(LocalDateTime.of(2018, 11, 11, 11, 11))
+                .closeEnrollmentDateTime(LocalDateTime.of(2018, 12, 31, 11, 11))
+                .beginEventDateTime(LocalDateTime.of(2018, 11, 25, 10,11))
+//                .endEventDateTime(LocalDateTime.of(2018, 12, 25, 00, 00))
+                .endEventDateTime(LocalDateTime.of(2019, 12, 20, 10, 30))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("반포역 4번 출구")
+                .build();
+
+//        event.setId(100);
+//        Mockito.when(eventRepository.save(event)).thenReturn(event);
+
+        mockMvc.perform(post("/api/events/")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaTypes.HAL_JSON)    // 원하는 Response
                 .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
-//                .andExpect(jsonPath("$[0].objectName").exists())
-//                .andExpect(jsonPath("$[0].field").exists())
-//                .andExpect(jsonPath("$[0].defaultMessage").exists())
-//                .andExpect(jsonPath("$[0].code").exists())
-//                .andExpect(jsonPath("$[0].rejectedValue").exists());
+                .andExpect(status().isCreated())    // 201 응답
+                .andExpect(jsonPath("id").exists())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("free").value(false))
+                .andExpect(jsonPath("offline").value(true))
+                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()));
     }
+
 }

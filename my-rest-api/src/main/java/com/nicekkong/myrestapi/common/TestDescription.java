@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.SOURCE)  // annotation을 붙인 것을 어디까지 가져갈 것인가??
 public @interface TestDescription {
 
     String value();
